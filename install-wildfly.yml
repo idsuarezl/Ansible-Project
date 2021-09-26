@@ -1,0 +1,74 @@
+---
+
+- hosts: managed_node_2
+  tasks:
+  - name: Install Java8 package
+    apt:
+      name: default-jdk
+      state: latest
+  - name: Ensure group "ansible" exists
+    group:
+      name: wildfly
+      state: present
+      system: yes
+  - name: Create user for Ansible
+    user:
+      name: wildfly
+      system: yes
+      group: wildfly
+      home: /opt/wildfly2
+      shell: /sbin/nologin
+  - name: Create symlink
+    file:
+      src: /opt/wildfly-22.0.1.Final
+      dest: /opt/wildfly
+      owner: wildfly
+      group: wildfly
+      state: link
+      force: yes
+  - name: Download wildfly
+    get_url:
+      url: https://download.jboss.org/wildfly/22.0.1.Final/wildfly-22.0.1.Final.zip
+      dest: /root/wildflypkg.zip
+  - name: Unpackage wildfly
+    unarchive:
+      src: /root/wildflypkg.zip
+      dest: /opt/
+      copy: no
+  - name: Recursively change ownership of wildfly directory
+    file:
+      path: /opt/wildfly-22.0.1.Final
+      owner: wildfly
+      group: wildfly
+      state: directory
+      force: yes
+      recurse: yes
+  - name: Create directory
+    file:
+      path: /etc/wildfly
+      state: directory
+      owner: wildfly
+      group: wildfly
+  - name: Copy directory
+    copy:
+      src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.conf
+      dest: /etc/wildfly/
+      remote_src: yes
+  - name: Copy another directory
+    copy:
+      src: /opt/wildfly/docs/contrib/scripts/systemd/launch.sh
+      dest: /opt/wildfly/bin/
+      remote_src: yes
+  - name: Make it executable
+    command: sh -c 'chmod +x /opt/wildfly/bin/*.sh'
+  - name: Copy service directory
+    copy:
+      src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.service
+      dest: /lib/systemd/system
+      remote_src: yes
+  - name: Restart daemons
+    command: systemctl daemon-reload
+  - name: Start service
+    command: systemctl start wildfly
+  - name: Enable service
+    command: systemctl enable wildfly
