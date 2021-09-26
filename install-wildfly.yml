@@ -1,24 +1,28 @@
 ---
 
-- hosts: managed_node_2
+- hosts: all
   tasks:
-  - name: Install Java8 package
+  
+  - name: Instalar paquete Java8
     apt:
       name: default-jdk
       state: latest
-  - name: Ensure group "ansible" exists
+      
+  - name: Asegurarse que el grupo "wildfly" existe
     group:
       name: wildfly
       state: present
       system: yes
-  - name: Create user for Ansible
+      
+  - name: Crear usuario wildfly
     user:
       name: wildfly
       system: yes
       group: wildfly
       home: /opt/wildfly2
       shell: /sbin/nologin
-  - name: Create symlink
+      
+  - name: Crear link simbólico
     file:
       src: /opt/wildfly-22.0.1.Final
       dest: /opt/wildfly
@@ -26,16 +30,19 @@
       group: wildfly
       state: link
       force: yes
-  - name: Download wildfly
+      
+  - name: Descargar wildfly
     get_url:
       url: https://download.jboss.org/wildfly/22.0.1.Final/wildfly-22.0.1.Final.zip
       dest: /root/wildflypkg.zip
-  - name: Unpackage wildfly
+
+  - name: Descomprimir wildfly
     unarchive:
       src: /root/wildflypkg.zip
       dest: /opt/
       copy: no
-  - name: Recursively change ownership of wildfly directory
+      
+  - name: Cambiar recursivamente el owner de wildfly
     file:
       path: /opt/wildfly-22.0.1.Final
       owner: wildfly
@@ -43,32 +50,40 @@
       state: directory
       force: yes
       recurse: yes
-  - name: Create directory
+
+  - name: Crear directorio para wildfly
     file:
       path: /etc/wildfly
       state: directory
       owner: wildfly
       group: wildfly
-  - name: Copy directory
+      
+  - name: Copiar directorios al etc
     copy:
       src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.conf
       dest: /etc/wildfly/
       remote_src: yes
-  - name: Copy another directory
+      
+  - name: Copiar directorios al opt
     copy:
       src: /opt/wildfly/docs/contrib/scripts/systemd/launch.sh
       dest: /opt/wildfly/bin/
       remote_src: yes
-  - name: Make it executable
+      
+  - name: Dar permisos de ejecución
     command: sh -c 'chmod +x /opt/wildfly/bin/*.sh'
-  - name: Copy service directory
+    
+  - name: Copiar directorio para crear el servicio
     copy:
       src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.service
       dest: /lib/systemd/system
       remote_src: yes
-  - name: Restart daemons
+      
+  - name: Reiniciar daemons
     command: systemctl daemon-reload
-  - name: Start service
+    
+  - name: Iniciar servicio
     command: systemctl start wildfly
-  - name: Enable service
+    
+  - name: Habilitar servicio
     command: systemctl enable wildfly
