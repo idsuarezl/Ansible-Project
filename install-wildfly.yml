@@ -1,6 +1,7 @@
 ---
 
-- hosts: all
+- name: Instalar Wildfly
+  hosts: all
   tasks:
   
   - name: Instalar paquete Java8
