@@ -1,0 +1,10 @@
+---
+
+- name: Instalar Maven
+  hosts: all
+  tasks:
+  
+  - name: Instalar paquete Maven
+    yum:
+      name: maven
+      state: latest
