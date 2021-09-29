@@ -1,0 +1,29 @@
+---
+
+- name: Desplegar war
+  hosts: all
+  
+  tasks:
+  
+    - name: Buscar archivo war
+      find:
+        file_type: file
+        paths: /home/target
+        patterns: *.war
+        use_regex: yes
+      register: warlocation
+      delegate_to: maven
+  
+    - name: Recuperar archivo war y dejarlo en la máquina Ansible
+      fetch: 
+        src: warlocation.files[0].location
+        dest: /home/
+      when: warlocation.matched != 0
+      failed_when: warlocation.matched == 0
+      delegate_to: maven
+      
+    - name: Copiar archivo para su despliegue automático
+      copy:
+        src: "/home/{{ warlocation.files[0].location }}"
+        dest: "{{ dest }}"
+      delegate_to: "{{ web_server }}"
