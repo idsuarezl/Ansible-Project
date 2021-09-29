@@ -24,3 +24,9 @@
         src: "C:\Users\Administrator\Desktop\new_app\{{ copy_result.original_basename }}"
         dest: C:\Users\Administrator\Desktop\new_app
         remote_src: yes
+        
+    - name: Crear el sitio en IIS
+      win_iis_website:
+        name: new_app
+        physical_path: C:\Users\Administrator\Desktop\new_app
+        state: started
