@@ -12,6 +12,5 @@
         
     - name: Compilar proyecto con Maven
       command: mvn package
-      args:
-        chdir: /home/
+      chdir: /home/
         
