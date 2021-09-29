@@ -1,0 +1,26 @@
+---
+
+- name: Desplegar app en IIS y crear site
+  hosts: all
+  
+  tasks:
+  
+    - name: Descargar y comprimir código fuente de GitHub
+      git:
+        dest: /home/
+        repo: https://github.com/rmkprabhu/sample-IIS.git
+        archive: zip
+      delegate_to: localhost
+      register: git_result
+      
+    - name: Copiar código fuente
+      win_copy:
+        src: "{{ git_result.git_dir_now }}"
+        dest: C:\Users\Administrator\Desktop\new_app
+      register: copy_result
+        
+    - name: Descomprimir zip con la aplicación
+      win_unzip:
+        src: "C:\Users\Administrator\Desktop\new_app\{{ copy_result.original_basename }}"
+        dest: C:\Users\Administrator\Desktop\new_app
+        remote_src: yes
