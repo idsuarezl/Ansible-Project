@@ -4,7 +4,7 @@
   hosts: all
   tasks:
   
-  - name: Instalar paquete Maven
+  - name: Instalar paquete Maven y Git
     yum:
       name: ['maven','git']
       state: latest
