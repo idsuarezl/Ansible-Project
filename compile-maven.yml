@@ -1,0 +1,17 @@
+---
+
+- name: Descargar y compilar proyecto maven
+  hosts: all
+  
+  tasks:
+  
+    - name: Descargar proyecto de GitHub
+      git:
+        repo: https://github.com/kliakos/sparkjava-war-example.git
+        dest: /home/
+        
+    - name: Compilar proyecto con Maven
+      command: mvn package
+      args:
+        chdir: /home/
+        
