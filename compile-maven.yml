@@ -11,6 +11,7 @@
         dest: /home/
         
     - name: Compilar proyecto con Maven
-      command: mvn package
-      chdir: /home/
+      command: 
+        cmd: mvn package
+        chdir: /home/
         
