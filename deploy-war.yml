@@ -9,7 +9,7 @@
       find:
         file_type: file
         paths: /home/target
-        patterns: "*.war"
+        patterns: *.war
         use_regex: yes
       register: warlocation
       delegate_to: maven
